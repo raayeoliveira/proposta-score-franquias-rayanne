@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Proposta — Revisão do Score Franquias v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --ink: #1a1f36;
+    --ink-soft: #5c6478;
+    --ink-mute: #8a92a6;
+    --paper: #f4f5f8;
+    --card: #ffffff;
+    --rule: #e4e6ec;
+    --rule-strong: #c9ccd4;
+    --coral: #EB615E;
+    --coral-dim: #c7504d;
+
+    --pill-fica-bg: #e5f2e8;
+    --pill-fica-ink: #2b6b43;
+    --pill-muda-bg: #faeedd;
+    --pill-muda-ink: #8a5a1a;
+    --pill-novo-bg: #e4ecfb;
+    --pill-novo-ink: #2d4ea0;
+    --pill-sai-bg: #e8eaef;
+    --pill-sai-ink: #5c6478;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); color: var(--ink); font-family: 'IBM Plex Sans', system-ui, -apple-system, sans-serif; font-weight: 400; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 48px 40px 96px; }
+
+  /* Header */
+  header.doc-head { display: grid; grid-template-columns: 48px 1fr auto; gap: 20px; align-items: center; padding-bottom: 24px; margin-bottom: 40px; border-bottom: 1px solid var(--rule); }
+  header.doc-head .shape { width: 42px; height: auto; }
+  header.doc-head h1 { font-weight: 600; font-size: 24px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  header.doc-head .sub { color: var(--ink-soft); font-size: 13px; margin: 0; }
+  header.doc-head .meta { font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-mute); text-align: right; }
+  header.doc-head .meta strong { color: var(--ink); font-weight: 500; }
+
+  /* Section */
+  section { margin-top: 48px; }
+  section > h2 { font-weight: 600; font-size: 22px; letter-spacing: -0.01em; margin: 0 0 4px; display: flex; align-items: baseline; gap: 14px; }
+  section > h2 .num { font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: var(--coral); font-weight: 500; letter-spacing: 0; }
+  section > .lede { color: var(--ink-soft); font-size: 14px; max-width: 72ch; margin: 0 0 20px; }
+
+  /* Legenda pills */
+  .legend { display: flex; gap: 8px; margin: 10px 0 18px; }
+  .pill { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; }
+  .pill.fica { background: var(--pill-fica-bg); color: var(--pill-fica-ink); }
+  .pill.muda { background: var(--pill-muda-bg); color: var(--pill-muda-ink); }
+  .pill.novo { background: var(--pill-novo-bg); color: var(--pill-novo-ink); }
+  .pill.sai  { background: var(--pill-sai-bg);  color: var(--pill-sai-ink); }
+
+  /* Resumo cards */
+  .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 16px; }
+  .summary > div { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 20px; }
+  .summary .k { font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 10px; }
+  .summary .v { font-size: 20px; font-weight: 600; line-height: 1.2; }
+  .summary .n { color: var(--ink-soft); font-size: 12.5px; margin-top: 6px; }
+
+  /* Tabela */
+  .tbl-wrap { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+  table.data { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  table.data thead th { font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mute); text-align: left; padding: 14px 18px; border-bottom: 1px solid var(--rule); background: var(--card); }
+  table.data tbody td { padding: 14px 18px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  table.data tbody tr:last-child td { border-bottom: none; }
+  table.data tr.group td { background: #eef0f5; font-weight: 600; color: var(--ink-soft); font-size: 12.5px; padding: 10px 18px; }
+  table.data td.crit { font-weight: 500; width: 26%; }
+  table.data td.hoje { color: var(--ink-soft); width: 16%; }
+  table.data td.max { width: 9%; font-family: 'IBM Plex Mono', monospace; font-variant-numeric: tabular-nums; text-align: right; font-weight: 500; color: var(--coral-dim); white-space: nowrap; }
+  table.data td.max small { display: block; font-family: 'IBM Plex Sans', sans-serif; font-size: 10px; letter-spacing: 0.04em; color: var(--ink-mute); text-transform: uppercase; margin-top: 2px; font-weight: 400; }
+  table.data td.prop { width: 10%; white-space: nowrap; }
+  table.data td.muda-col { color: var(--ink-soft); }
+  table.data td.muda-col strong { color: var(--ink); font-weight: 500; }
+
+  /* Composição categorias (tabela simples) */
+  table.comp { width: 100%; border-collapse: collapse; font-size: 13.5px; background: var(--card); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+  table.comp thead th { font-family: 'IBM Plex Mono', monospace; font-weight: 500; font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-mute); text-align: left; padding: 12px 18px; border-bottom: 1px solid var(--rule); }
+  table.comp tbody td { padding: 12px 18px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  table.comp tbody tr:last-child td { border-bottom: none; }
+  table.comp td.num { font-family: 'IBM Plex Mono', monospace; text-align: right; font-variant-numeric: tabular-nums; font-weight: 500; }
+  table.comp tr.total td { background: #eef0f5; font-weight: 600; }
+
+  /* Frentes */
+  .frentes { display: grid; gap: 12px; margin-top: 8px; }
+  .frente-card { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 20px 22px; display: grid; grid-template-columns: 42px 1fr; gap: 16px; }
+  .frente-card .no { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--coral); letter-spacing: 0.1em; font-weight: 500; padding-top: 2px; }
+  .frente-card h3 { font-weight: 600; font-size: 15.5px; margin: 0 0 6px; letter-spacing: -0.005em; }
+  .frente-card p { margin: 0; font-size: 13.5px; color: var(--ink-soft); max-width: 80ch; }
+  .frente-card p + p { margin-top: 8px; }
+
+  /* Fora de escopo */
+  .fora { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fora > div { background: var(--card); border: 1px solid var(--rule); border-radius: 10px; padding: 18px 20px; }
+  .fora h4 { margin: 0 0 8px; font-weight: 600; font-size: 14px; }
+  .fora p { margin: 0; font-size: 13px; color: var(--ink-soft); }
+
+  /* Limitação */
+  .limit { font-size: 12.5px; color: var(--ink-mute); padding-top: 14px; margin-top: 24px; border-top: 1px dashed var(--rule); }
+  .limit strong { color: var(--ink); font-weight: 500; }
+
+  /* Lista próximos */
+  ol.steps { padding-left: 20px; font-size: 14px; color: var(--ink-soft); }
+  ol.steps li { margin-bottom: 6px; }
+  ol.steps strong { color: var(--ink); font-weight: 500; }
+
+  footer.doc-foot { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--rule); display: flex; justify-content: space-between; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-mute); }
+
+  @media (max-width: 820px) {
+    .wrap { padding: 28px 20px 56px; }
+    header.doc-head { grid-template-columns: 36px 1fr; }
+    header.doc-head .meta { grid-column: 1 / -1; text-align: left; }
+    .summary { grid-template-columns: 1fr; }
+    .fora { grid-template-columns: 1fr; }
+    table.data td.hoje, table.data td.prop { width: auto; }
+  }
+  @media print {
+    body { background: #fff; }
+    .wrap { padding: 24px; max-width: none; }
+    section, .frente-card, .tbl-wrap { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="doc-head">
+    <svg class="shape" viewBox="0 0 564 575" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M543.226 178.172L442.93 119.392C443.194 117.952 443.72 116.643 443.72 115.203V26.5752C443.72 11.913 431.743 0 417.001 0H363.562C348.821 0 336.843 11.913 336.843 26.5752V57.6015L300.516 36.3936C285.774 27.6225 266.294 29.0626 252.605 39.1428C252.342 39.2737 252.079 39.2737 251.947 39.4046L20.951 172.543C1.73419 183.932 -6.29474 210.507 5.55122 230.406C17.9237 251.09 45.301 256.588 64.5178 245.199L78.3381 237.213C62.017 269.025 51.7505 305.026 51.7505 344.169C51.7505 406.221 75.7056 467.226 119.799 511.344C137.173 528.624 157.443 543.156 179.555 553.759C196.666 562.007 214.567 568.814 233.257 572.218C258.002 576.669 283.8 574.444 308.808 574.444C335.922 574.444 363.036 574.444 390.018 574.444C414.5 574.444 439.113 574.575 463.99 574.575C470.176 574.575 476.231 573.004 481.759 570.254C488.866 566.72 492.947 562.792 497.685 556.509C502.95 549.57 506.635 541.061 506.635 532.159V252.923C525.062 259.599 547.306 253.839 558.363 235.511C570.34 215.613 562.311 189.038 542.963 177.648L543.226 178.172ZM427.794 348.751C427.794 433.582 370.012 502.573 282.878 502.573C195.745 502.573 131.777 429.131 131.777 344.3C131.777 259.468 195.745 188.776 282.878 188.776C370.012 188.776 427.794 254.232 427.794 338.147V348.751Z" fill="#EB615E"/></svg>
+    <div>
+      <h1>Revisão do Score Franquias — v2</h1>
+      <p class="sub">Ajustes cirúrgicos sobre a metodologia da Lua Cunha (04/07/2025). Preserva a arquitetura das cinco categorias e a soma 115 original.</p>
+    </div>
+    <div class="meta">
+      <div><strong>Rayanne Oliveira</strong></div>
+      <div>BackOffice Franquias</div>
+      <div>27 · out · 2026</div>
+    </div>
+  </header>
+
+  <!-- Resumo -->
+  <section>
+    <h2><span class="num">1</span>Em uma folha</h2>
+    <div class="summary">
+      <div>
+        <div class="k">Frentes propostas</div>
+        <div class="v">3 ajustes</div>
+        <div class="n">todas dentro das categorias existentes</div>
+      </div>
+      <div>
+        <div class="k">Pesos das categorias</div>
+        <div class="v">115 preservado</div>
+        <div class="n">Notas dominante (50) por design</div>
+      </div>
+      <div>
+        <div class="k">Fora do escopo desta v2</div>
+        <div class="v">UTI · REV03</div>
+        <div class="n">entram em revisão separada</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Composição -->
+  <section>
+    <h2><span class="num">2</span>Composição por categoria</h2>
+    <p class="lede">A soma 115 é desenho original: Notas vale metade, as outras quatro somam 65. Esta v2 preserva essa decisão intencional e opera apenas dentro de cada categoria.</p>
+    <table class="comp">
+      <thead>
+        <tr><th>Categoria</th><th class="num">Peso</th><th>Método</th><th>Cortes</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Notas</td><td class="num">50</td><td>Airbnb 60% + outras OTAs 40% (u3m, −4)</td><td>&lt;0 Reversão · &lt;15 Plano de Ação · 15–30 Regular</td></tr>
+        <tr><td>Operação Local <span style="color:var(--coral-dim);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.05em;">· v2</span></td><td class="num">20</td><td>Média dos 4 critérios manuais × 20 (PDA sai, 25% cada)</td><td>&lt;6 sem comprometimento · 6–9 oscila</td></tr>
+        <tr><td>Avaliação / Checkout <span style="color:var(--coral-dim);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.05em;">· v2</span></td><td class="num">15</td><td>(avaliações ÷ checkouts) × 15 · <strong>&lt;50% zera a categoria</strong></td><td>&lt;50% nota zero · 50–85% parcial · ≥85% máximo</td></tr>
+        <tr><td>Aderência — Manutenções <span style="color:var(--coral-dim);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.05em;">· v2</span></td><td class="num">15</td><td>Critério único: Resolução de manutenções (Pipe 14)</td><td>&lt;5 abaixo · 5–9 oscila</td></tr>
+        <tr><td>Uso do sistema Seazone Host <span style="color:var(--coral-dim);font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.05em;">· v2 (substitui Comunicação)</span></td><td class="num">15</td><td>% operação no Host × 15 (critério único) · <strong>&lt;50% zera a categoria</strong></td><td>&lt;50% nota zero · 50–85% parcial · ≥85% máximo</td></tr>
+        <tr class="total"><td>Soma</td><td class="num">115</td><td colspan="2">+ Bonificações (teto +10) − Penalidade [Σ (ocorrências × gravidade REV03) no mês]</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Critério a critério -->
+  <section>
+    <h2><span class="num">3</span>Critério a critério</h2>
+    <div class="legend">
+      <span class="pill fica">Fica</span>
+      <span class="pill muda">Muda</span>
+      <span class="pill novo">Novo</span>
+      <span class="pill sai">Sai</span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="data">
+        <thead>
+          <tr>
+            <th>Critério</th>
+            <th>Hoje</th>
+            <th class="num">Máx</th>
+            <th>Proposta</th>
+            <th>O que muda</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr class="group"><td colspan="5">Notas · peso 50</td></tr>
+          <tr>
+            <td class="crit">Média Checkin / Limpeza — Airbnb (u3m)</td>
+            <td class="hoje">60% da categoria, Nekt/Metabase</td>
+            <td class="max">30<small>pts</small></td>
+            <td class="prop"><span class="pill fica">Fica</span></td>
+            <td class="muda-col">Mantém mecânica, inclusive subtração de 4 das médias.</td>
+          </tr>
+          <tr>
+            <td class="crit">Média Checkin / Limpeza — outras OTAs (u3m)</td>
+            <td class="hoje">40% da categoria, Nekt/Metabase</td>
+            <td class="max">20<small>pts</small></td>
+            <td class="prop"><span class="pill fica">Fica</span></td>
+            <td class="muda-col">Mantém mecânica.</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Operação Local · peso 20 (v2: 4 critérios × 25%)</td></tr>
+          <tr>
+            <td class="crit">Padronização do imóvel</td>
+            <td class="hoje">20% da categoria, manual (consultor)</td>
+            <td class="max">5<small>pts</small></td>
+            <td class="prop"><span class="pill muda">Muda</span></td>
+            <td class="muda-col">Passa de 20% → 25% da categoria (4 → 5 pts), redistribuição após saída do PDA.</td>
+          </tr>
+          <tr>
+            <td class="crit">Cumprimento de plano de ações acordado</td>
+            <td class="hoje">20% da categoria, manual (PDA)</td>
+            <td class="max">—</td>
+            <td class="prop"><span class="pill sai">Sai</span></td>
+            <td class="muda-col"><strong>Removido do score.</strong> PDA já é regido pelo fluxo da Central de UTI de Franquias, e franquia que não cumpre a UTI é distratada. Manter no score duplica a cobrança sem agregar sinal — e cria risco de penalizar duas vezes a mesma falha.</td>
+          </tr>
+          <tr>
+            <td class="crit">Sistema / planilha de controle financeiro</td>
+            <td class="hoje">20% da categoria, manual</td>
+            <td class="max">5<small>pts</small></td>
+            <td class="prop"><span class="pill muda">Muda</span></td>
+            <td class="muda-col">Passa de 20% → 25% da categoria (4 → 5 pts), redistribuição após saída do PDA.</td>
+          </tr>
+          <tr>
+            <td class="crit">Controle de inventário do imóvel</td>
+            <td class="hoje">20% da categoria, manual</td>
+            <td class="max">5<small>pts</small></td>
+            <td class="prop"><span class="pill muda">Muda</span></td>
+            <td class="muda-col">Passa de 20% → 25% da categoria (4 → 5 pts), redistribuição após saída do PDA.</td>
+          </tr>
+          <tr>
+            <td class="crit">Controle de estoque</td>
+            <td class="hoje">20% da categoria, manual</td>
+            <td class="max">5<small>pts</small></td>
+            <td class="prop"><span class="pill muda">Muda</span></td>
+            <td class="muda-col">Passa de 20% → 25% da categoria (4 → 5 pts), redistribuição após saída do PDA.</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Avaliação / Checkout · peso 15 (v2: novo corte &lt;50%)</td></tr>
+          <tr>
+            <td class="crit">% de avaliações por checkout</td>
+            <td class="hoje">100% da categoria, Nekt/Metabase · corte &lt;40% / 40–50%</td>
+            <td class="max">15<small>pts</small></td>
+            <td class="prop"><span class="pill muda">Muda</span></td>
+            <td class="muda-col"><strong>Corte endurece:</strong> &lt;50% zera a categoria (hoje &lt;40% só sinaliza “sem engajamento”). Entre 50–85% nota parcial; ≥85% nota máxima.</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Aderência — Manutenções · peso 15 (v2: enxuga pra 1 critério)</td></tr>
+          <tr>
+            <td class="crit">Resolução de manutenções</td>
+            <td class="hoje">~11% da categoria, Pipefy Pipe 14</td>
+            <td class="max">15<small>pts</small></td>
+            <td class="prop"><span class="pill muda">Muda</span></td>
+            <td class="muda-col"><strong>Passa a ser único critério da categoria.</strong> Mantém mecânica (média de dias Pipe 14 × escala), mas agora vale 15 pts (antes ~1,67). Os outros 8 critérios da Aderência saem da média e viram ocorrências descontadas (grupo abaixo).</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Catálogo que alimenta a Penalidade mensal — <em>desconto só se a ocorrência foi registrada na Central</em></td></tr>
+          <tr>
+            <td class="crit">Não preencher formulário de check-in <br><span style="font-weight:400;color:var(--ink-mute);font-size:12px;">↳ <strong>criar código novo 4.5</strong> (uso de sistema)</span></td>
+            <td class="hoje">Aderência ~1,67 pts (combinado com checkout)</td>
+            <td class="max">−1<small>pt / ocor.</small></td>
+            <td class="prop"><span class="pill novo">Novo</span></td>
+            <td class="muda-col"><strong>Precisa criar código no catálogo.</strong> Proposta: 4.5 “Não preencher formulário de check-in no sistema”, gravidade Leve (−1), consistente com 10.8 “Não operar pelo Seazone Host” (Leve).</td>
+          </tr>
+          <tr>
+            <td class="crit">Não preencher formulário de check-out <br><span style="font-weight:400;color:var(--ink-mute);font-size:12px;">↳ <strong>criar código novo 4.6</strong> (uso de sistema)</span></td>
+            <td class="hoje">Aderência ~1,67 pts (combinado com checkin)</td>
+            <td class="max">−1<small>pt / ocor.</small></td>
+            <td class="prop"><span class="pill novo">Novo</span></td>
+            <td class="muda-col"><strong>Precisa criar código no catálogo.</strong> Proposta: 4.6 “Não preencher formulário de check-out no sistema”, gravidade Leve (−1).</td>
+          </tr>
+          <tr>
+            <td class="crit">Resolução de adequação <br><span style="font-weight:400;color:var(--ink-mute);font-size:12px;">↳ mapeia em código <strong>2.2</strong> “Atraso em etapas da implantação &gt; 2 dias”</span></td>
+            <td class="hoje">Aderência ~1,67 pts, Pipefy [IMP] Pipe 1</td>
+            <td class="max">−2<small>pts / ocor.</small></td>
+            <td class="prop"><span class="pill muda">Muda</span></td>
+            <td class="muda-col"><strong>Sai da Aderência, vira ocorrência Média (2.2).</strong> Cada etapa da fase 5 do Pipe 1 com atraso &gt; 2 dias desconta 2 pts. Elimina a duplicidade com PDA (Operação Local).</td>
+          </tr>
+          <tr>
+            <td class="crit">Cancelamentos de vistorias <br><span style="font-weight:400;color:var(--ink-mute);font-size:12px;">↳ mapeia em código <strong>10.6</strong> “Cancelar vistoria agendada sem aviso”</span></td>
+            <td class="hoje">Aderência ~1,67 pts, planilha SOS</td>
+            <td class="max">−2<small>pts / ocor.</small></td>
+            <td class="prop"><span class="pill muda">Muda</span></td>
+            <td class="muda-col"><strong>Sai da Aderência, vira ocorrência Média (10.6).</strong> Cada cancelamento sem aviso desconta 2 pts.</td>
+          </tr>
+          <tr>
+            <td class="crit">Lançamento de despesas com erro <br><span style="font-weight:400;color:var(--ink-mute);font-size:12px;">↳ mapeia em código <strong>8.1</strong> “Despesas lançadas com omissão de dados”</span></td>
+            <td class="hoje">Aderência ~1,67 pts, base despesas</td>
+            <td class="max">−2<small>pts / ocor.</small></td>
+            <td class="prop"><span class="pill muda">Muda</span></td>
+            <td class="muda-col"><strong>Sai da Aderência, vira ocorrência Média (8.1).</strong> Cada despesa com omissão de dados desconta 2 pts.</td>
+          </tr>
+          <tr>
+            <td class="crit">Lançamento de danos fora do prazo (D14) <br><span style="font-weight:400;color:var(--ink-mute);font-size:12px;">↳ <strong>criar código novo 7.3</strong> (régua D14 do Sapron)</span></td>
+            <td class="hoje">Aderência ~1,67 pts, base danos (D14)</td>
+            <td class="max">−4<small>pts / ocor.</small></td>
+            <td class="prop"><span class="pill novo">Novo</span></td>
+            <td class="muda-col"><strong>Precisa criar código no catálogo.</strong> Proposta: 7.3 “Lançamento de danos fora do prazo de 14 dias”, gravidade Grave (−4). O código 7.2 (D7) existente continua para outros cenários; 7.3 passa a reger a régua D14 do Sapron.</td>
+          </tr>
+          <tr>
+            <td class="crit">Ausência em treinamento quinzenal <br><span style="font-weight:400;color:var(--ink-mute);font-size:12px;">↳ mapeia em código <strong>10.1</strong> “Faltar a treinamento sem justificativa”</span></td>
+            <td class="hoje">Aderência ~1,67 pts, controle quinzenal</td>
+            <td class="max">−1<small>pt / falta</small></td>
+            <td class="prop"><span class="pill muda">Muda</span></td>
+            <td class="muda-col"><strong>Sai da Aderência, vira ocorrência Leve (10.1).</strong> Cada ausência desconta 1 pt.</td>
+          </tr>
+          <tr>
+            <td class="crit">Taxa de limpeza acima do teto <br><span style="font-weight:400;color:var(--ink-mute);font-size:12px;">↳ <strong>criar nova categoria 12 (Taxa de Limpeza)</strong></span></td>
+            <td class="hoje">Aderência ~1,67 pts, Calculadora</td>
+            <td class="max">−2<small>pts / imóvel</small></td>
+            <td class="prop"><span class="pill novo">Novo</span></td>
+            <td class="muda-col"><strong>Precisa criar categoria no catálogo.</strong> Proposta: nova <strong>Categoria 12 — Taxa de Limpeza</strong>, código 12.1 “Taxa acima do teto da Calculadora”, gravidade Média (−2 pts por imóvel). Deixa espaço pra outros critérios de taxa evoluírem na mesma categoria.</td>
+          </tr>
+          <tr>
+            <td class="crit">Realocação de hóspede <br><span style="font-weight:400;color:var(--ink-mute);font-size:12px;">↳ mapeia em código <strong>3.8</strong> “Cancelar reserva ou realocar hóspede por falha da franquia”</span></td>
+            <td class="hoje">Aderência ~1,67 pts, base pós-reserva</td>
+            <td class="max">−4<small>pts / ocor.</small></td>
+            <td class="prop"><span class="pill muda">Muda</span></td>
+            <td class="muda-col"><strong>Sai da Aderência, vira ocorrência Grave (3.8).</strong> Impacto direto no hóspede.</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Comunicação · peso 15 — <em>categoria removida na v2</em></td></tr>
+          <tr>
+            <td class="crit">Tempo médio de resposta (SLA)</td>
+            <td class="hoje">50% da categoria, Sults</td>
+            <td class="max">—</td>
+            <td class="prop"><span class="pill sai">Sai</span></td>
+            <td class="muda-col"><strong>Removido.</strong> Comunicação já é capturada caso a caso pelas ocorrências (10.2 Não responder Central, 3.3 Falta de suporte ao hóspede, 3.6 Não relatar ocorrência). Manter como categoria duplica a cobrança.</td>
+          </tr>
+          <tr>
+            <td class="crit">Comunicação assertiva no suporte</td>
+            <td class="hoje">50% da categoria, Blip</td>
+            <td class="max">—</td>
+            <td class="prop"><span class="pill sai">Sai</span></td>
+            <td class="muda-col"><strong>Removido.</strong> Idem: já coberto pelas ocorrências Categoria 3 (Reservas & Experiência do Hóspede).</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Uso do sistema Seazone Host · peso 15 (v2: nova categoria no lugar de Comunicação)</td></tr>
+          <tr>
+            <td class="crit">% de operação feita dentro do Seazone Host</td>
+            <td class="hoje">não existe hoje</td>
+            <td class="max">15<small>pts</small></td>
+            <td class="prop"><span class="pill novo">Novo</span></td>
+            <td class="muda-col"><strong>Nova categoria com critério único.</strong> Mede a adesão da franquia ao sistema oficial (ex: % de reservas / operações registradas no Host vs. canais externos). <strong>Corte: &lt;50% zera a categoria</strong> · 50–85% parcial · ≥85% máximo. Fonte a definir com produto (base Nekt / Seazone Host).</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Bonificações · teto +10 no score · Penalidades · subtração direta</td></tr>
+          <tr>
+            <td class="crit">Indicação de imóveis</td>
+            <td class="hoje">+1 por indicação, teto 5</td>
+            <td class="max">5<small>pts</small></td>
+            <td class="prop"><span class="pill fica">Fica</span></td>
+            <td class="muda-col">—</td>
+          </tr>
+          <tr>
+            <td class="crit">Indicação de imóveis bem sucedidos</td>
+            <td class="hoje">conta apenas “ganho”</td>
+            <td class="max">5<small>pts</small></td>
+            <td class="prop"><span class="pill fica">Fica</span></td>
+            <td class="muda-col">—</td>
+          </tr>
+          <tr>
+            <td class="crit">Vendas Spot</td>
+            <td class="hoje">base vendas spot</td>
+            <td class="max">5<small>pts</small></td>
+            <td class="prop"><span class="pill fica">Fica</span></td>
+            <td class="muda-col">—</td>
+          </tr>
+          <tr>
+            <td class="crit">Airbnb &gt; 4,8</td>
+            <td class="hoje">+5 pontos</td>
+            <td class="max">5<small>pts</small></td>
+            <td class="prop"><span class="pill fica">Fica</span></td>
+            <td class="muda-col">—</td>
+          </tr>
+          <tr>
+            <td class="crit">Engajamento com a marca</td>
+            <td class="hoje">manual (consultor)</td>
+            <td class="max">5<small>pts</small></td>
+            <td class="prop"><span class="pill fica">Fica</span></td>
+            <td class="muda-col">Soma total das bonificações respeita teto +10.</td>
+          </tr>
+          <tr>
+            <td class="crit">Penalidade — Σ (ocorrências × gravidade) no mês</td>
+            <td class="hoje">soma mensal de ocorrências × pontuação REV03</td>
+            <td class="max">(−)</td>
+            <td class="prop"><span class="pill fica">Fica</span></td>
+            <td class="muda-col">Mecânica <strong>mantida</strong>. O que muda é o catálogo que a alimenta: passam a entrar aqui os 8 critérios que saíram da Aderência (via códigos existentes + 4 códigos novos a criar).</td>
+          </tr>
+
+          <tr class="group"><td colspan="5">Total máximo possível</td></tr>
+          <tr>
+            <td class="crit">Score máximo</td>
+            <td class="hoje">115 (categorias) + 10 (teto bonificação)</td>
+            <td class="max">125<small>pts</small></td>
+            <td class="prop">—</td>
+            <td class="muda-col">Soma das 5 categorias no teto (50 + 20 + 15 + 15 + 15) + bonificação no teto (10). Penalidade subtrai do total.</td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Frentes -->
+  <section>
+    <h2><span class="num">4</span>As três frentes</h2>
+    <div class="frentes">
+      <div class="frente-card">
+        <div class="no">F1</div>
+        <div>
+          <h3>Substituir a categoria Comunicação por Uso do sistema Seazone Host</h3>
+          <p>A categoria <em>Comunicação</em> (SLA + Comunicação assertiva, peso 15) sai inteira — comunicação já é capturada caso a caso pelas ocorrências (10.2 Não responder Central, 3.3 Falta de suporte ao hóspede, 3.6 Não relatar ocorrência). Manter como categoria duplica a cobrança.</p>
+          <p>No lugar entra uma nova categoria <strong>Uso do sistema Seazone Host</strong> (peso 15), com critério único medindo o % de operação da franquia registrada no sistema oficial. Reforça a adesão ao Host, que hoje só é cobrada via ocorrência Leve 10.8 (teto 1 por franquia/mês).</p>
+        </div>
+      </div>
+      <div class="frente-card">
+        <div class="no">F2</div>
+        <div>
+          <h3>Enxugar a Aderência pra Manutenções e ampliar o catálogo de ocorrências pra absorver os outros 8 critérios</h3>
+          <p>A categoria <em>Aderência aos Processos</em> passa a ter um único critério — <strong>Resolução de Manutenções</strong> (Pipe 14) — valendo os 15 pts cheios. Os outros 8 critérios saem da média e passam a ser descontados pela <strong>Penalidade</strong> já existente, que soma mensalmente (nº de ocorrências × pontuação REV03). A mecânica de desconto não muda; o que muda é o catálogo que a alimenta.</p>
+          <p>5 dos 8 critérios já encontram código no catálogo oficial (2.2, 3.8, 8.1, 10.1, 10.6). Os outros 3 pedem 4 códigos novos: 4.5, 4.6, 7.3 e uma nova Categoria 12 (Taxa de Limpeza). <strong>O que conta pro score é a ocorrência registrada na Central</strong> — se não foi aberta ocorrência, não desconta. A duplicidade Resolução de adequação × PDA desaparece — adequação sai da Aderência e vira ocorrência 2.2.</p>
+        </div>
+      </div>
+      <div class="frente-card">
+        <div class="no">F3</div>
+        <div>
+          <h3>Remover Cumprimento de PDA da Operação Local</h3>
+          <p>PDA já é regido pela Central de UTI de Franquias — franquia que não cumpre o plano de reversão é distratada. Manter o critério no score duplica a cobrança sobre a mesma falha e cria risco de penalização em cascata (score baixo + UTI + distrato pela mesma causa).</p>
+          <p>A Operação Local mantém peso 20, agora dividido entre 4 critérios de 5 pts cada (25% da categoria): Padronização, Controle financeiro, Controle de inventário, Controle de estoque. Soma total do score segue 115.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fora de escopo -->
+  <section>
+    <h2><span class="num">5</span>O que fica fora desta v2</h2>
+    <p class="lede">Dois temas foram levantados durante o diagnóstico e deslocados para um ciclo próprio, evitando mudança estrutural no mesmo movimento.</p>
+    <div class="fora">
+      <div>
+        <h4>Códigos novos a criar no catálogo REV03</h4>
+        <p><strong>4.5</strong> — Não preencher formulário de check-in no sistema · Leve (−1)</p>
+        <p><strong>4.6</strong> — Não preencher formulário de check-out no sistema · Leve (−1)</p>
+        <p><strong>7.3</strong> — Lançamento de danos fora do prazo de 14 dias · Grave (−4). Coexiste com 7.2 (D7) existente.</p>
+        <p><strong>Categoria 12 · Taxa de Limpeza</strong><br>Código 12.1 — Taxa de limpeza acima do teto da Calculadora · Média (−2 por imóvel).</p>
+      </div>
+      <div>
+        <h4>Risco de UTI de Franquias</h4>
+        <p>O score ainda não captura entrada em UTI nem o cumprimento do plano de reversão. É um indicador de risco dormente que merece categoria ou sub-penalidade dedicada; fica para o próximo ciclo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Próximos passos -->
+  <section>
+    <h2><span class="num">6</span>Próximos passos</h2>
+    <ol class="steps">
+      <li><strong>Aprovação do esqueleto</strong> pela Diretoria de Franquias.</li>
+      <li><strong>Simulação da v2</strong> sobre a base histórica dos últimos 12 meses (aba <code>Score novo</code>, ~2.740 linhas) para medir reclassificação de franquias por faixa.</li>
+      <li><strong>Ajuste técnico na planilha oficial</strong> — abas Parametros, Distribuição de pesos e Avaliação Critérios Manuais.</li>
+      <li><strong>Abertura do próximo ciclo</strong> com os temas adiados: Penalidade REV03 e Risco UTI.</li>
+    </ol>
+    <p class="limit"><strong>Limitação metodológica.</strong> F1 depende de a Central de Chamado expor a métrica “tempo médio até a 1ª resposta” por franquia; F2 depende de uma coluna de referência (status de ativação) na planilha; F3 depende de uma data de ativação confiável por franquia.</p>
+  </section>
+
+  <footer class="doc-foot">
+    <span>Score Franquias v2 · Proposta</span>
+    <span>Rayanne Oliveira · BackOffice Franquias · Seazone</span>
+  </footer>
+
+</div>
+</body>
+</html>
